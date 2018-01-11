@@ -1,7 +1,31 @@
 var express = require("express");
 var fs = require("fs");
+var https = require("https");
 
 var app = new express();
+
+
+var opts = {
+  key: fs.readFileSync('/conf/server.key'),
+  cert: fs.readFileSync('/conf/server.pem'),
+  ca: fs.readFileSync('/conf/cacert.pem'),
+  requestCert: true,
+  rejectUnauthorized: false
+};
+
+
+app.use(clientCertificateAuth(checkAuth));
+
+var checkAuth = function(cert) {
+	console.log(cert);
+	console.log(JSON.stringify(cert));
+  return true; //allow all client certs signed by CA
+};
+
+
+
+
+
 
 app.get("/", (req,res) => {
 	var map = fs.readFileSync("/data/testnode-mapping", "utf-8");
@@ -11,5 +35,5 @@ app.get("/", (req,res) => {
 	res.status(200).end("Yellow world: \n\n" + JSON.stringify(config) + "\n\n" + JSON.stringify(req.headers));
 });
 
-app.listen(8080);
+https.createServer(opts, app).listen(8080);
 
