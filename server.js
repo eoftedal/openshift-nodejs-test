@@ -15,6 +15,7 @@ var opts = {
 };
 
 
+
 app.use(clientCertificateAuth(checkAuth));
 
 var checkAuth = function(cert) {
