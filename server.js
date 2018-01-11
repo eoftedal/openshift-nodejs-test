@@ -14,15 +14,15 @@ var opts = {
   rejectUnauthorized: false
 };
 
-
-
-app.use(clientCertificateAuth(checkAuth));
-
 var checkAuth = function(cert) {
 	console.log(cert);
 	console.log(JSON.stringify(cert));
   return true; //allow all client certs signed by CA
 };
+
+app.use(clientCertificateAuth(checkAuth));
+
+
 
 
 
