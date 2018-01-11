@@ -1,14 +1,15 @@
 var express = require("express");
 var fs = require("fs");
 var https = require("https");
+var clientCertificateAuth = require('client-certificate-auth');
 
 var app = new express();
 
 
 var opts = {
-  key: fs.readFileSync('/conf/server.key'),
-  cert: fs.readFileSync('/conf/server.pem'),
-  ca: fs.readFileSync('/conf/cacert.pem'),
+  key: fs.readFileSync('server.key'),
+  cert: fs.readFileSync('server.pem'),
+  ca: fs.readFileSync('cacert.pem'),
   requestCert: true,
   rejectUnauthorized: false
 };
