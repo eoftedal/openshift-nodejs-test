@@ -7,9 +7,9 @@ var app = new express();
 
 
 var opts = {
-  key: fs.readFileSync('/conf/server.key'),
-  cert: fs.readFileSync('/conf/server.pem'),
-  ca: fs.readFileSync('/conf/cacert.pem'),
+  key: fs.readFileSync('/conf/key.pem'),
+  cert: fs.readFileSync('/conf/cert-chain.pem'),
+  ca: fs.readFileSync('/conf/root-cert.pem'),
   requestCert: true,
   rejectUnauthorized: false
 };
