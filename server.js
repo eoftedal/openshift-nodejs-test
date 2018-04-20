@@ -4,12 +4,23 @@ var fs = require("fs");
 var app = new express();
 
 app.get("/", (req,res) => {
-	var map = fs.readFileSync("/data/testnode-mapping", "utf-8");
-	var config = JSON.parse(map);
 	res.header("Content-Type", "text/plain");
 
-	res.status(200).end("Yellow world: \n\n" + JSON.stringify(config) + "\n\n" + JSON.stringify(req.headers));
+	res.status(200).end("Yellow world: \n\n" + JSON.stringify(req.headers));
 });
 
-app.listen(8080);
+function log(msg) {
+	console.log(new Date() + " : " + msg);
+}
 
+function start() {
+	log("Planning to listen...")
+	app.listen(8080, () => log("Now I'm listening!"));
+}
+
+if (process.env.DELAY) {
+	log("There seems to be a delay... " + process.env.DELAY);
+	setTimeout(start, parseInt(process.env.DELAY));
+} else {
+	start();
+}
