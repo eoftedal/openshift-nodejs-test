@@ -8,11 +8,9 @@ app.get("/", (req,res) => {
 	console.log(new Date() + " " + address + " " + req.method + " " + req.url + " " + req.headers["user-agent"]);
 	res.header("Content-Type", "text/plain");
 	let url = URL.parse(req.url);
-	console.log(url.query);
 	let delay = 0;
 	if (url.query) {
 		var m = {}; url.query.split("&").map(x => x.split("=")).map(x => m[x[0]] = x[1]);
-		console.log(m);
 		delay = parseInt(m["delay"] || "0");
 	}
 	setTimeout(() => {
