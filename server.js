@@ -3,6 +3,8 @@ var fs = require("fs");
 var URL = require("url");
 var app = new express();
 
+var failedBefore = {};
+
 app.get("/", (req,res) => {
 	let address = req.socket.address().address;
 	console.log(new Date() + " " + address + " " + req.method + " " + req.url + " " + req.headers["user-agent"]);
@@ -12,6 +14,15 @@ app.get("/", (req,res) => {
 	if (url.query) {
 		var m = {}; url.query.split("&").map(x => x.split("=")).map(x => m[x[0]] = x[1]);
 		delay = parseInt(m["delay"] || "0");
+		if (m["failid"]) {
+			var id = m["failid"];
+			if (!failedBefore[id]) {
+				failedBefore[id] = true;
+				console.log("Killing this the first time: " + id);
+				req.socket.destroy();
+				return;
+			}
+		}
 	}
 	setTimeout(() => {
 		res.status(200).end("Yellow world: " + address + "\n\n" + JSON.stringify(req.headers));	
