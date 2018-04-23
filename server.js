@@ -47,11 +47,14 @@ process.on('warning', (warning) => {
 });
 
 function handle(signal) {
-  console.log(`Received ${signal}`);
-  server.close(function() { 
-  	console.log('All connections closed'); 
-	  process.exit(0);
-  });
+  log(`Received ${signal}`);
+  setTimeout(() => {
+  	log(`Closing...`);
+	  server.close(function() { 
+	  	log('All connections closed'); 
+		  process.exit(0);
+	  });
+	}, 5000);
 }
 process.on('SIGINT', () => handle('SIGINT'));
 process.on('SIGTERM', () => handle('SIGTERM'));
