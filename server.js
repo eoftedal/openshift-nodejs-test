@@ -4,6 +4,7 @@ var URL = require("url");
 var app = new express();
 
 var failedBefore = {};
+var server;
 
 app.get("/", (req,res) => {
 	let address = req.socket.address().address;
@@ -47,15 +48,18 @@ process.on('warning', (warning) => {
 
 function handle(signal) {
   console.log(`Received ${signal}`);
-  process.exit(0);
+  server.close(function() { 
+  	console.log('All connections closed'); 
+	  process.exit(0);
+  });
 }
-process.on('SIGINT', handle);
-process.on('SIGTERM', handle);
+process.on('SIGINT', () => handle('SIGINT'));
+process.on('SIGTERM', () => handle('SIGTERM'));
 
 
 function start() {
 	log("Planning to listen...")
-	app.listen(8080, () => log("Now I'm listening!"));
+	server = app.listen(8080, () => log("Now I'm listening!"));
 }
 
 if (process.env.DELAY) {
