@@ -1,14 +1,23 @@
 var express = require("express");
 var fs = require("fs");
-
+var URL = require("url");
 var app = new express();
 
 app.get("/", (req,res) => {
 	let address = req.socket.address().address;
 	console.log(new Date() + " " + address + " " + req.method + " " + req.url + " " + req.headers["user-agent"]);
 	res.header("Content-Type", "text/plain");
-
-	res.status(200).end("Yellow world: " + address + "\n\n" + JSON.stringify(req.headers));
+	let url = URL.parse(req.url);
+	console.log(url.query);
+	let delay = 0;
+	if (url.query) {
+		var m = {}; url.query.split("&").map(x => x.split("=")).map(x => m[x[0]] = x[1]);
+		console.log(m);
+		delay = parseInt(m["delay"] || "0");
+	}
+	setTimeout(() => {
+		res.status(200).end("Yellow world: " + address + "\n\n" + JSON.stringify(req.headers));	
+	}, delay);
 });
 
 function log(msg) {
