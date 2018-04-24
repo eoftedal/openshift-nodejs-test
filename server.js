@@ -5,6 +5,8 @@ var app = new express();
 
 var failedBefore = {};
 var server;
+var status = "active";
+
 
 app.get("/", (req,res) => {
 	let address = req.socket.address().address;
@@ -30,6 +32,25 @@ app.get("/", (req,res) => {
 	}, delay);
 });
 
+app.get("/ready", (req, res) => {
+	let address = req.socket.address().address;
+	console.log(new Date() + " " + address + " " + req.method + " " + req.url + " " + req.headers["user-agent"] + " " + status);
+	if (status !== "active") {
+		if (status === "shutting down") {
+			status = "leftTheBuilding";
+			setTimeout(() => {
+				log(`Closing...`);
+				server.close(function() { 
+					log('All connections closed'); 
+					process.exit(0);
+				});
+			}, 5000);
+		}
+		return res.status(503).end();
+	}
+	return res.status(200).end("Okelidokeli");
+});
+
 function log(msg) {
 	console.log(new Date() + " : " + msg);
 }
@@ -48,13 +69,15 @@ process.on('warning', (warning) => {
 
 function handle(signal) {
   log(`Received ${signal}`);
-  setTimeout(() => {
-  	log(`Closing...`);
-	  server.close(function() { 
-	  	log('All connections closed'); 
-		  process.exit(0);
-	  });
-	}, 5000);
+  status = "shutting down";
+	setTimeout(() => {
+		log(`Closing...`);
+		setTimeout(() => process.exit(1), 30000);
+		server.close(function() { 
+			log('All connections closed'); 
+			process.exit(0);
+		});
+	}, 15000);
 }
 process.on('SIGINT', () => handle('SIGINT'));
 process.on('SIGTERM', () => handle('SIGTERM'));
