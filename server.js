@@ -8,7 +8,9 @@ var server;
 var status = "active";
 
 
-app.get("/", (req,res) => {
+
+
+function handleRequest(req,res) {
 	let address = req.socket.address().address;
 	console.log(new Date() + " " + address + " " + req.method + " " + req.url + " " + req.headers["user-agent"]);
 	res.header("Content-Type", "text/plain");
@@ -30,7 +32,11 @@ app.get("/", (req,res) => {
 	setTimeout(() => {
 		res.status(200).end("Yellow world: " + address + "\n\n" + JSON.stringify(req.headers));	
 	}, delay);
-});
+};
+
+app.post("/", handleRequest);
+
+app.get("/", handleRequest); 
 
 app.get("/ready", (req, res) => {
 	let address = req.socket.address().address;
